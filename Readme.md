@@ -15,10 +15,10 @@ Follow these instructions to get the project up and running on your local machin
 
 ### Project Setup
 1. Clone the repository: run `git clone https://github.com/ArshitMittal/Bookstore.git`
-2. run `cd bookstore`
+2. run `cd Bookstore`
 3. run `npm init -y`
 4. Install dependencies: run command `npm install`
-
+5. run `nodemon src/index.js`
 
 ### Set up the database:
 Choose a Mongodb database and set up a connection to it 
