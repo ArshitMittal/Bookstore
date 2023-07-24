@@ -7,10 +7,10 @@ const router = new express.Router()
 //Register api endppoint is created for registering new users 
 router.post('/register', async (req, res) => {
    
-   // const { error, value } = User.prototype.validateUserData(req.body); // will validate user req body using joi 
-   // if (error) {
-     // return res.status(400).json({ error: error.details[0].message });
-   // }
+    const { error, value } = User.prototype.validateUserData(req.body); // will validate user req body using joi 
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
     const user = new User(value)  // will create new user 
     try {
         await user.save() // will save data to the database 
