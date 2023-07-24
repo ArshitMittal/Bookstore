@@ -1,9 +1,10 @@
-const mongoose = require('mongoose')
-const validator = require('validator')
-const bcrypt = require('bcryptjs')
-const jwt = require('jsonwebtoken')
-const Book = require('./books')
-
+const mongoose = require('mongoose') //used to define schema for the book collection
+const validator = require('validator') //inbuilt module to validate the various details provided by the user 
+const bcrypt = require('bcryptjs') //used to encrypt the passwords in form of hash 
+const jwt = require('jsonwebtoken') //used to create webtokens 
+const Book = require('./books') //used to get details about the 
+const Joi = require('joi') //used to validate the request 
+//here user schema is defined 
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -46,6 +47,9 @@ const userSchema = new mongoose.Schema({
     }]
 })
 
+// Define a Joi schema for validation
+
+
 userSchema.virtual('Books', {
     ref: 'Book',
     localField: '_id',
@@ -72,8 +76,8 @@ userSchema.methods.generateAuthToken = async function () {
     return token
 }
 
-userSchema.statics.findByCredentials = async (email, password) => {
-    const user = await User.findOne({ email })
+userSchema.statics.findByCredentials = async (name, email, password) => {
+    const user = await User.findOne({ name , email })
 
     if (!user) {
         throw new Error('Unable to login')
@@ -107,5 +111,29 @@ userSchema.pre('remove', async function (next) {
 })
 
 const User = mongoose.model('User', userSchema)
+
+const userValidationSchema = Joi.object({
+    name: Joi.string().required(),
+    email: Joi.string().email().required(),
+    password: Joi.string().min(7).required(),
+    role: Joi.string().valid('Admin', 'Customer').default('Customer'),
+  })
+  
+  // Add a method to the userSchema to validate data against the Joi schema
+  User.prototype.validateUserData = function (data) {
+    return userValidationSchema.validate(data);
+  }
+
+  const userValidationSchemaLogin = Joi.object({
+    name: Joi.string().required(),
+    email: Joi.string().email().required(),
+    password: Joi.string().min(7).required(),
+  })
+  
+  // Add a method to the userSchema to validate data against the Joi schema
+  User.prototype.validateUserDataLogin = function (data) {
+    return userValidationSchemaLogin.validate(data);
+  }
+
 
 module.exports = User

@@ -1,5 +1,4 @@
-
-
+//Here the connection is established with the database and new database 'Bookstore-api' will be created 
 const Mongoose = require('mongoose')
 Mongoose.connect("mongodb://127.0.0.1:27017/Bookstore-api",{
     useNewUrlParser : true,
