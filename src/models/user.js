@@ -5,6 +5,12 @@ const jwt = require('jsonwebtoken') //used to create webtokens
 const Book = require('./books') //used to get details about the 
 const Joi = require('joi') //used to validate the request 
 //here user schema is defined 
+const logger = require('../controllers/logger')
+
+logger.warn('IN')
+
+
+
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -19,6 +25,7 @@ const userSchema = new mongoose.Schema({
         lowercase: true,
         validate(value) {
             if (!validator.isEmail(value)) {
+                logger.error('Invalid email')
                 throw new Error('Email is invalid')
             }
         }
@@ -30,6 +37,7 @@ const userSchema = new mongoose.Schema({
         trim: true,
         validate(value) {
             if (value.toLowerCase().includes('password')) {
+                logger.error('Invalid Password')
                 throw new Error('Password cannot contain "password"')
             }
         }
@@ -76,16 +84,18 @@ userSchema.methods.generateAuthToken = async function () {
     return token
 }
 
-userSchema.statics.findByCredentials = async (name, email, password) => {
-    const user = await User.findOne({ name , email })
+userSchema.statics.findByCredentials = async ( email, password) => {
+    const user = await User.findOne({ email })
 
     if (!user) {
+        logger.error('User Not found')
         throw new Error('Unable to login')
     }
 
     const isMatch = await bcrypt.compare(password, user.password)
 
     if (!isMatch) {
+        logger.error('Incorrect Password')
         throw new Error('Unable to login')
     }
 
@@ -97,6 +107,7 @@ userSchema.pre('save', async function (next) {
     const user = this
 
     if (user.isModified('password')) {
+        logger.info('Pasword is converted to hash')
         user.password = await bcrypt.hash(user.password, 8)
     }
 
@@ -125,7 +136,7 @@ const userValidationSchema = Joi.object({
   }
 
   const userValidationSchemaLogin = Joi.object({
-    name: Joi.string().required(),
+    //name: Joi.string().required(),
     email: Joi.string().email().required(),
     password: Joi.string().min(7).required(),
   })

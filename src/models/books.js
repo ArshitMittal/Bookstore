@@ -1,8 +1,5 @@
 
-const mongoose = require('mongoose') //used to define schema for the book collection
-const validator = require('validator') //inbuilt module to validate the various details provided by the user 
-const bcrypt = require('bcryptjs') //used to encrypt the passwords in form of hash 
-const jwt = require('jsonwebtoken') // used to create tokens for the logged in users 
+const mongoose = require('mongoose') //used to define schema for the book collection 
 const Joi = require('joi')
 
 //Schema for the book collection is defined here 
@@ -37,8 +34,11 @@ const BookSchema = new mongoose.Schema({
                      throw new Error('Value cannot be less than 0')
                  }
         
-             }
-})
+             },
+
+},{
+  timestamps: true
+ })
 
 
 

@@ -2,7 +2,9 @@ const express = require('express')
 const User = require('../models/user')
 const { authMiddleware, authAdmin } = require('../middleware/auth')
 const router = new express.Router()
+const controllerUser = require('../controllers/user')
 
+<<<<<<< HEAD
 
 //Register api endppoint is created for registering new users 
 router.post('/register', async (req, res) => {
@@ -37,6 +39,10 @@ router.post('/users/login', async (req, res) => {
         res.status(400).send(e.message)
     }
 })
+=======
+router.post('/register', controllerUser.registerUser) 
+router.post('/users/login', controllerUser.loginUser)
+>>>>>>> 884069d (Log Files added)
 
 
 // Following functionalities are not required by the project 

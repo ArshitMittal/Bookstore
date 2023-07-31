@@ -1,0 +1,3 @@
+{"level":30,"time":1690785453242,"pid":97519,"hostname":"arshitmittal-macbook.local","msg":"This is an informational log message."}
+{"level":50,"time":1690785453242,"pid":97519,"hostname":"arshitmittal-macbook.local","msg":"An error occurred."}
+{"level":40,"time":1690785453242,"pid":97519,"hostname":"arshitmittal-macbook.local","msg":"IN"}
