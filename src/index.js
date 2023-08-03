@@ -7,12 +7,25 @@ const bookRouter = require('./routers/books') //helps to route the different api
 const logger = require('./controllers/logger')
 const app = express()
 const port = process.env.PORT || 3000
+const Sentry = require('@sentry/node');
 
+Sentry.init({
+    release: process.env.VERSION,
+    environment: process.env.ENV,
+    dsn: "https://3b55aafdc6804d0b948ae2478917bccb@o201295.ingest.sentry.io/4505602112356352",
+    serverName : "ARHIT_BOOK_STORE"
+});
+
+module.exports = Sentry
+
+app.use(Sentry.Handlers.requestHandler());
+app.use(Sentry.Handlers.errorHandler());
 app.use(express.json())
 app.use(userRouter)
 app.use(bookRouter)
 
 app.listen(port, (error) => {
+    Sentry.captureException(error)
     logger.error(error)
     console.log(error);
 })

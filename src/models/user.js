@@ -6,6 +6,7 @@ const Book = require('./books') //used to get details about the
 const Joi = require('joi') //used to validate the request 
 //here user schema is defined 
 const logger = require('../controllers/logger')
+const Sentry = require('@sentry/node')
 
 logger.warn('IN')
 
@@ -25,6 +26,7 @@ const userSchema = new mongoose.Schema({
         lowercase: true,
         validate(value) {
             if (!validator.isEmail(value)) {
+                Sentry.captureException('Invalid email')
                 logger.error('Invalid email')
                 throw new Error('Email is invalid')
             }
@@ -37,6 +39,7 @@ const userSchema = new mongoose.Schema({
         trim: true,
         validate(value) {
             if (value.toLowerCase().includes('password')) {
+                Sentry.captureException('Invalid Password')
                 logger.error('Invalid Password')
                 throw new Error('Password cannot contain "password"')
             }
@@ -88,6 +91,7 @@ userSchema.statics.findByCredentials = async ( email, password) => {
     const user = await User.findOne({ email })
 
     if (!user) {
+        Sentry.captureException('User not found')
         logger.error('User Not found')
         throw new Error('Unable to login')
     }
@@ -95,6 +99,7 @@ userSchema.statics.findByCredentials = async ( email, password) => {
     const isMatch = await bcrypt.compare(password, user.password)
 
     if (!isMatch) {
+        Sentry.captureException('Incorrect password')
         logger.error('Incorrect Password')
         throw new Error('Unable to login')
     }

@@ -3,12 +3,14 @@ const User = require('../models/user')
 const { authMiddleware, authAdmin } = require('../middleware/auth')
 const router = new express.Router()
 const logger = require('./logger')
+const Sentry = require('@sentry/node')
 
 const controllerUser = {
 
     registerUser : async (req, res) => {
         const { error, value } = User.prototype.validateUserData(req.body); // will validate user req body using joi 
         if (error) {
+            Sentry.captureException(error)
             logger.error(error.details[0].message)
           return res.status(400).json({ error: error.details[0].message });
         }
@@ -18,6 +20,7 @@ const controllerUser = {
              const token = await user.generateAuthToken() //will generate token for authenticating users 
              res.status(201).send({ user, token })
          } catch (e) {
+            Sentry.captureException(e)
             logger.error(e.message)
              res.status(400).send(e.message)
          }
@@ -29,6 +32,7 @@ const controllerUser = {
         // console.log(req.body)
         const { error, value } = User.prototype.validateUserDataLogin(req.body); // will validate user req body using joi 
         if (error) {
+            Sentry.captureException(error)
             logger.error(error.details[0].message)
           return res.status(400).json({ error: error.details[0].message });
         }
@@ -37,6 +41,7 @@ const controllerUser = {
             const token = await user.generateAuthToken()
             res.send({ user, token })
         } catch (e) {
+            Sentry.captureException(e)
             logger.error(e.message)
             res.status(400).send(e.message)
         }

@@ -8,6 +8,7 @@ const mongoose=require('mongoose')
 // const { findById } = require('../models/user')
 const got = require('got')
 const logger = require('./logger')
+const Sentry = require('@sentry/node')
 
 const bookController = { 
 
@@ -16,6 +17,7 @@ const bookController = {
             //const bookData = req.body
             const { error, value } = Book.prototype.validateBookData(req.body);
             if (error) {
+                Sentry.captureException(error)
                 logger.error(error.message)
                 return res.status(400).json({ error: error.details[0].message });
             }
@@ -28,6 +30,7 @@ const bookController = {
                 await book.save()
                 res.status(201).send(book)
             } catch (e) {
+                Sentry.captureException(e)
                 logger.error(e.message)
                 res.status(400).send(e.message)
             }
@@ -58,6 +61,7 @@ const bookController = {
                 // Return the paginated list of books and total count in the response
                 res.json({ books, totalCount })
             }catch (e) {
+                Sentry.captureException(e)
                 logger.error(e.message)
                 res.status(500).send(e.message)
             }
@@ -70,11 +74,13 @@ const bookController = {
             try {
                 const books = await Book.findOne({ _id})
                 if(!books) {
+                    Sentry.captureException('Book not found')
                     logger.error('Book not found')
                     return res.status(404).send('Incorrect Book Id')
                 }
                 res.send(books)
             } catch (e) {
+                Sentry.captureException(e)
                 logger.error(e.message)
                 res.status(500).send()
             }
@@ -85,6 +91,7 @@ const bookController = {
      updateBook : async (req,res) => {
             const { error, value } = await Book.prototype.validateBookDataUpdate(req.body); // use to check validation via JOI 
             if (error) {
+                Sentry.captureException(error)
                 logger.error(error.message)
                 return res.status(400).json({ error: error.details[0].message });
             }
@@ -93,6 +100,7 @@ const bookController = {
             const allowedUpdates = ['title','author', 'price','stock','genre']
             const isValidOperation = updates.every((update) => allowedUpdates.includes(update)) // only certain updates will be allowed 
             if (!isValidOperation) {
+                Sentry.captureException('Invalid Update operation')
                 logger.error('Invalid updates')
                 return res.status(400).send({ error: 'Invalid updates!' })
             }
@@ -103,6 +111,7 @@ const bookController = {
                 const books = await Book.findOne({ _id: objectId });
                 console.log(books);
                 if (!books) {
+                    Sentry.captureException('Book not found')
                     logger.error('Book not found')
                     return res.status(404).send('Book not found');
                 }
@@ -116,6 +125,7 @@ const bookController = {
                 await books.save();
                 res.send(books)
                 } catch (e) {
+                    Sentry.captureException(e)
                     logger.error(e.message)
                     res.status(400).send(e.message)
                 }
@@ -129,12 +139,14 @@ const bookController = {
                     const books = await Book.findOneAndDelete(id)
             
                     if (!books) {
+                        Sentry.captureException('Book not found')
                         logger.error('book not found')
                         res.status(404).send('book bot found')
                     }
                     res.send(books)
                     
                 } catch (e) {
+                    Sentry.captureException(e)
                     logger.error(e.message)
                     res.status(500).send(e.message)
                 }
@@ -145,6 +157,7 @@ const bookController = {
             const book = await Book.findById({_id})
             if(!book)
             {
+                Sentry.captureException('Book not found')
                 logger.error('Book not found')
                 throw new Error('Book not found')
             }
@@ -170,6 +183,7 @@ const bookController = {
             await payment.save()
             res.send(body)
 	        }catch(e){
+                Sentry.captureException(e)
                 logger.error(e.message)
                 console.log(e);
                 res.status(400).send(e.message)

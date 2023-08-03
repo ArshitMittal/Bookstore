@@ -3,14 +3,14 @@ const User = require('../models/user')
 const { authMiddleware, authAdmin } = require('../middleware/auth')
 const router = new express.Router()
 const controllerUser = require('../controllers/user')
-
-<<<<<<< HEAD
+const Sentry = require('@sentry/node')
 
 //Register api endppoint is created for registering new users 
 router.post('/register', async (req, res) => {
    
     const { error, value } = User.prototype.validateUserData(req.body); // will validate user req body using joi 
     if (error) {
+        Sentry.captureException(error)
       return res.status(400).json({ error: error.details[0].message });
     }
     const user = new User(value)  // will create new user 
@@ -19,6 +19,7 @@ router.post('/register', async (req, res) => {
         const token = await user.generateAuthToken() //will generate token for authenticating users 
         res.status(201).send({ user, token })
     } catch (e) {
+        Sentry.captureException(error)
         res.status(400).send(e)
     }
 })
@@ -29,6 +30,7 @@ router.post('/users/login', async (req, res) => {
     // console.log(req.body)
     const { error, value } = User.prototype.validateUserDataLogin(req.body); // will validate user req body using joi 
     if (error) {
+        Sentry.captureException(error)
       return res.status(400).json({ error: error.details[0].message });
     }
     try {
@@ -36,13 +38,10 @@ router.post('/users/login', async (req, res) => {
         const token = await user.generateAuthToken()
         res.send({ user, token })
     } catch (e) {
+        Sentry.captureException(error)
         res.status(400).send(e.message)
     }
 })
-=======
-router.post('/register', controllerUser.registerUser) 
-router.post('/users/login', controllerUser.loginUser)
->>>>>>> 884069d (Log Files added)
 
 
 // Following functionalities are not required by the project 

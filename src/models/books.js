@@ -1,6 +1,7 @@
 
 const mongoose = require('mongoose') //used to define schema for the book collection 
 const Joi = require('joi')
+const Sentry = require('@sentry/node')
 
 //Schema for the book collection is defined here 
 const BookSchema = new mongoose.Schema({
@@ -23,7 +24,10 @@ const BookSchema = new mongoose.Schema({
                  validate(value) //used to validate only positive value 
                   {
                      if(value<0)
-                     throw new Error('Price must be greater than 0')
+                     {
+                      Sentry.captureException('Price cannot be negative number')
+                       throw new Error('Price must be greater than 0')
+                     }
                   }
              },
              stock: {
@@ -31,7 +35,10 @@ const BookSchema = new mongoose.Schema({
                  validate(value)  //used to validate only positive value 
                  {
                      if(value<0)
-                     throw new Error('Value cannot be less than 0')
+                     {
+                      Sentry.captureException('Stock cannot be negative')
+                       throw new Error('Value cannot be less than 0')
+                     }
                  }
         
              },
