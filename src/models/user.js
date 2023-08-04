@@ -93,7 +93,7 @@ userSchema.statics.findByCredentials = async ( email, password) => {
     if (!user) {
         Sentry.captureException('User not found')
         logger.error('User Not found')
-        throw new Error('Unable to login')
+        throw new Error('User not found')
     }
 
     const isMatch = await bcrypt.compare(password, user.password)
@@ -101,7 +101,7 @@ userSchema.statics.findByCredentials = async ( email, password) => {
     if (!isMatch) {
         Sentry.captureException('Incorrect password')
         logger.error('Incorrect Password')
-        throw new Error('Unable to login')
+        throw new Error('incorrect password')
     }
 
     return user

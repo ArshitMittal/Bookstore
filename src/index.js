@@ -6,9 +6,13 @@ const userRouter = require('./routers/user') //helps to route the different api 
 const bookRouter = require('./routers/books') //helps to route the different api requests and perform action accordingly on book
 const logger = require('./controllers/logger')
 const app = express()
+
+const path = "/Users/arshit.mittal/Desktop/Bookstore/public"
+
+app.use(express.static(path))
+
 const port = process.env.PORT || 3000
 const Sentry = require('@sentry/node');
-
 Sentry.init({
     release: process.env.VERSION,
     environment: process.env.ENV,
@@ -23,6 +27,7 @@ app.use(Sentry.Handlers.errorHandler());
 app.use(express.json())
 app.use(userRouter)
 app.use(bookRouter)
+
 
 app.listen(port, (error) => {
     Sentry.captureException(error)

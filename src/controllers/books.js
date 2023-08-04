@@ -54,12 +54,12 @@ const bookController = {
             filter.stock = stock
             try {
                 // Query the database using the filter and pagination options
-                const books = await Book.find(filter).skip(skip).limit(limit).sort(sort);
+                const books = await Book.find(filter)//.skip(skip).limit(limit).sort(sort);
                 // console.log(books)
                 // Get the total count of books matching the filter for pagination
                 const totalCount = await Book.countDocuments(filter);
                 // Return the paginated list of books and total count in the response
-                res.json({ books, totalCount })
+                res.json({ books})
             }catch (e) {
                 Sentry.captureException(e)
                 logger.error(e.message)

@@ -6,7 +6,9 @@ const router = new express.Router()
 const mongoose=require('mongoose')
 const bookController = require('../controllers/books')
 console.log(bookController.deleteBook)
-
+router.get('/users/books.html',(req,res) => {
+    res.sendFile('/Users/arshit.mittal/Desktop/Bookstore/public/books.html')
+})
 router.post('/books', authMiddleware , authAdmin , bookController.postBook)
 router.get('/books' , authMiddleware , bookController.getBooks)
 router.get('/books/:id', authMiddleware , bookController.getBookId)

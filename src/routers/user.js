@@ -5,6 +5,9 @@ const router = new express.Router()
 const controllerUser = require('../controllers/user')
 const Sentry = require('@sentry/node')
 
+router.get('/users/login',(req,res) => {
+   res.sendFile('/Users/arshit.mittal/Desktop/Bookstore/public/login.html')
+})
 //Register api endppoint is created for registering new users 
 router.post('/register', async (req, res) => {
    
@@ -34,7 +37,7 @@ router.post('/users/login', async (req, res) => {
       return res.status(400).json({ error: error.details[0].message });
     }
     try {
-        const user = await User.findByCredentials(req.body.name ,req.body.email, req.body.password) // will check the user credentials
+        const user = await User.findByCredentials(req.body.email, req.body.password) // will check the user credentials
         const token = await user.generateAuthToken()
         res.send({ user, token })
     } catch (e) {
